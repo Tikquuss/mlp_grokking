@@ -35,9 +35,9 @@ ID_params=$none
 
 ### wandb ###
 use_wandb=False
-group_name="tdf=${train_pct}-wd=${weight_decay}-r_lr=${representation_lr}-d_lr=${decoder_lr}-r_d=${representation_dropout}-d_d=${decoder_dropout}-opt=${opt}"
+group_name="p=${p}-mod=${modular}-tdf=${train_pct}-wd=${weight_decay}-r_lr=${representation_lr}-d_lr=${decoder_lr}-r_d=${representation_dropout}-d_d=${decoder_dropout}-opt=${opt}"
 wandb_entity="grokking_ppsp"
-wandb_project="toy_model_grokking_op=${operator}-p=${p}-task=${task}-mod=${modular}"
+wandb_project="toy_model_grokking_op=${operator}-task=${task}"
 
 #exp_id=$task
 exp_id="${task}_${group_name}"
