@@ -111,9 +111,9 @@ if __name__ == "__main__":
         "group_vars" : None,
 
         ### Intrinsic Dimension Estimation
-        #"ID_params" : {},
+        "ID_params" : {},
         #"ID_params": {"method" : "mle", "k":2},
-        "ID_params": {"method" : "twonn"},
+        #"ID_params": {"method" : "twonn"},
         
         ### Devices & Seed
         "accelerator" : "auto",

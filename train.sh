@@ -30,6 +30,9 @@ max_epochs=10000
 lr_scheduler=$none
 #lr_scheduler=reduce_lr_on_plateau,factor=0.2,patience=20,min_lr=0.00005,mode=min,monitor=val_loss
 
+#ID_params="method=str(twonn)"
+ID_params=$none
+
 ### wandb ###
 use_wandb=False
 group_name="tdf=${train_pct}-wd=${weight_decay}-r_lr=${representation_lr}-d_lr=${decoder_lr}-r_d=${representation_dropout}-d_d=${decoder_dropout}-opt=${opt}"
@@ -73,7 +76,7 @@ python train.py \
 	--wandb_project $wandb_project \
 	--group_name $group_name \
 	--group_vars $none \
-	--ID_params "method=str(twonn)" \
+	--ID_params $ID_params \
 	--accelerator auto \
 	--devices auto \
 	--random_seed $random_seed \

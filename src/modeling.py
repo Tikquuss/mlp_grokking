@@ -61,6 +61,7 @@ class Model(pl.LightningModule):
 
         self.criterion = nn.MSELoss() if self.hparams.regression else nn.CrossEntropyLoss() 
 
+        if self.hparams.get("ID_params") is None : self.hparams["ID_params"] = {}
         ID_params = {**{}, **self.hparams.get("ID_params", {"method" : "mle", "k":2})}
         #ID_params = {"method" : "twonn"}
         id_funct = ID_functions.get(ID_params.pop("method", None), None)
@@ -90,6 +91,8 @@ class Model(pl.LightningModule):
         self.es_mode = (lambda s : "min" if 'loss' in s else 'max')(self.es_metric)
         self.es_step = 0
         self.reached_limit = False
+
+        self.activation = torch.nn.functional.softmax if not self.hparams.regression else lambda x : x
 
     def configure_optimizers(self):
         parameters = [
@@ -128,6 +131,10 @@ class Model(pl.LightningModule):
             acc = (tensor.argmax(dim=-1) == y).float().mean() * 100
             output["train_acc"] = acc
             self.log('train_acc', acc, prog_bar=True)
+        if True :
+            h = torch.norm(tensor * self.activation(tensor))
+            output["h_train"] = h
+            self.log('h_train', h, prog_bar=True)
         return output 
     
     def validation_step(self, batch, batch_idx):
@@ -138,6 +145,10 @@ class Model(pl.LightningModule):
             acc = (tensor.argmax(dim=-1) == y).float().mean() * 100
             output["val_acc"] = acc
             self.log('val_acc', acc, prog_bar=True)
+        if True :
+            h = torch.norm(tensor * self.activation(tensor))
+            output["h_val"] = h
+            self.log('h_val', h, prog_bar=True)
         return  output 
     
     def test_step(self, batch, batch_idx):
@@ -200,6 +211,8 @@ class Model(pl.LightningModule):
         loss = torch.stack([x["loss"] for x in outputs]).mean()
         logs = {"train_loss": loss}
 
+        logs["h_train"] = torch.stack([x["h_train"] for x in outputs]).mean()
+
         if 'train' in self.es_metric : logs["e_step"] = self.increase_es_limit(logs)
 
         if self.hparams.regression : memo_condition = round(loss.item(), 10) == 0.0
@@ -242,6 +255,7 @@ class Model(pl.LightningModule):
             "val_loss": loss,    
             #"val_epoch": self.current_epoch,
         }
+        logs["h_val"] = torch.stack([x["h_val"] for x in outputs]).mean()
 
         if self.hparams.regression : comp_condition = round(loss.item(), 10) == 0.0
         else : 

@@ -37,7 +37,9 @@ def visualize_embeddings_good(model, A = None, B = None, N = 10, interpolation='
     #interpolation='hermite'
     #interpolation=None
     axi = plt.imshow(img.numpy(), interpolation=interpolation, cmap=new_viridis)
-    plt.colorbar(axi)
+    plt.colorbar(axi, 
+                fraction=0.046, pad=0.04, # https://stackoverflow.com/a/26720422/11814682
+    )
 
     if pixel_wise_text :
         H, C = img.shape
